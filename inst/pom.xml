@@ -1,0 +1,156 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<project xmlns="http://maven.apache.org/POM/4.0.0"-->
+<!--         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">-->
+<!--    <modelVersion>4.0.0</modelVersion>-->
+<!--    <parent>-->
+<!--        <groupId>org.basti</groupId>-->
+<!--        <artifactId>root</artifactId>-->
+<!--        <version>0.1-SNAPSHOT</version>-->
+<!--    </parent>-->
+
+<!--    <artifactId>inst</artifactId>-->
+
+<!--    <properties>-->
+<!--        <maven.compiler.source>24</maven.compiler.source>-->
+<!--        <maven.compiler.target>24</maven.compiler.target>-->
+<!--        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
+<!--    </properties>-->
+
+<!--    <build>-->
+<!--        <plugins>-->
+
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-shade-plugin</artifactId>-->
+<!--                <version>3.5.2</version> &lt;!&ndash; Use a recent version &ndash;&gt;-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase> &lt;!&ndash; Binds to the package phase &ndash;&gt;-->
+<!--                        <goals>-->
+<!--                            <goal>shade</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            &lt;!&ndash; Name of the output fat JAR &ndash;&gt;-->
+<!--                            <shadedArtifactAttached>true</shadedArtifactAttached>-->
+<!--                            <shadedClassifierName>shaded</shadedClassifierName>-->
+<!--                            &lt;!&ndash;                            <finalName>${project.artifactId}-${project.version}-shaded</finalName>&ndash;&gt;-->
+<!--                            <transformers>-->
+<!--                                &lt;!&ndash; Defines the manifest attributes for the SHADED JAR &ndash;&gt;-->
+<!--                                <transformer-->
+<!--                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
+<!--                                    <manifestEntries>-->
+<!--                                        &lt;!&ndash; REQUIRED: The fully qualified name of your agent's class with the premain method &ndash;&gt;-->
+<!--                                        <Premain-Class>org.basti.MyAgent</Premain-Class>-->
+<!--                                        &lt;!&ndash; OPTIONAL, but commonly needed for bytecode manipulation &ndash;&gt;-->
+<!--                                        <Can-Redefine-Classes>true</Can-Redefine-Classes>-->
+<!--                                        <Can-Retransform-Classes>true</Can-Retransform-Classes>-->
+<!--                                        &lt;!&ndash; Any other custom entries you want &ndash;&gt;-->
+<!--                                        <Agent-Description>Bytecode Analysis Agent</Agent-Description>-->
+<!--                                        <Built-By>Maven Shade Plugin</Built-By>-->
+<!--                                        <Boot-Class-Path>${basedir}</Boot-Class-Path>-->
+<!--                                    </manifestEntries>-->
+<!--                                </transformer>-->
+<!--                                &lt;!&ndash; Optional: Merges META-INF/services files if dependencies use SPI &ndash;&gt;-->
+<!--                                <transformer-->
+<!--                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>-->
+<!--                            </transformers>-->
+<!--                            &lt;!&ndash; Optional: Filters or relocations if needed for complex dependency conflicts &ndash;&gt;-->
+<!--                            &lt;!&ndash; <filters>...</filters> &ndash;&gt;-->
+<!--                            &lt;!&ndash; <relocations>...</relocations> &ndash;&gt;-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
+<!--</project>-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.basti</groupId>
+    <artifactId>inst</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <agent.main.class>org.basti.MyAgent</agent.main.class>
+        <bytebuddy.version>1.14.18</bytebuddy.version> </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${bytebuddy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy-agent</artifactId>
+            <version>${bytebuddy.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Premain-Class>${agent.main.class}</Premain-Class>
+                                        <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                        <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <relocations>
+                                <relocation>
+                                    <pattern>net.bytebuddy</pattern>
+                                    <shadedPattern>org.basti.shaded.bytebuddy</shadedPattern>
+                                </relocation>
+                                </relocations>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>module-info.class</exclude>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <finalName>${project.artifactId}-shaded</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
