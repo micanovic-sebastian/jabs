@@ -1,12 +1,17 @@
-package org.basti;
+package bachelor;
 
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.matcher.ElementMatchers; // For matching classes and methods [3, 4]
+import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 
 public class MyAgent {
 
-    public static void premain(String agentArguments, Instrumentation instrumentation) {
+    private static final String FILE_ADVICE_CLASS = "bachelor.MyFileAdvice";
+
+    public static void premain(String agentArguments, Instrumentation instrumentation) throws IOException {
+
+
         System.out.println("### Java Agent 'MyAgent' LOADED! ### Arg: " + agentArguments);
 
         // Configure AgentBuilder to transform java.io.File
@@ -28,7 +33,7 @@ public class MyAgent {
                        .include(MyAgent.class.getClassLoader())
                         // Apply the advice to the 'delete' method that takes no arguments and returns a boolean
                        .advice(ElementMatchers.nameContains("e").and(ElementMatchers.takesArguments(0)).and(ElementMatchers.returns(boolean.class)),
-                                "org.basti.MyAdvice")) // Fully qualified name of your advice class
+                                FILE_ADVICE_CLASS)) // Fully qualified name of your advice class
                 // Install the agent on the provided Instrumentation instance
                .installOn(instrumentation);
 
@@ -45,7 +50,9 @@ public class MyAgent {
         } catch (ClassNotFoundException e) {
             System.err.println("### Agent: Could not find java.io.File class. This is unexpected. ###");
             e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (RuntimeException e) {}
+        catch (Exception e) {
             System.err.println("### Agent: Error during retransformation request for java.io.File: " + e.getMessage() + " ###");
             e.printStackTrace();
         }

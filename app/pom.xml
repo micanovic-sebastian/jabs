@@ -17,8 +17,8 @@
     <name>app</name>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>20</maven.compiler.source>
+        <maven.compiler.target>20</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -33,6 +33,12 @@
             <scope>test</scope>
         </dependency>
         -->
+        <dependency>
+            <groupId>org.basti</groupId>
+            <artifactId>agent</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -57,7 +63,7 @@
                     <archive>
                         <manifest>
                             <!-- REQUIRED: The main class for your application -->
-                            <mainClass>org.basti.App</mainClass>
+                            <mainClass>bachelor.App</mainClass>
                             <!-- OPTIONAL: To add classpath entries if external JARs are needed -->
                             <addClasspath>true</addClasspath>
                             <!-- Default entries are good practice -->
