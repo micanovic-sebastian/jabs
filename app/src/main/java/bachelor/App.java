@@ -7,8 +7,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Base64;
 
 public class App {
@@ -46,13 +47,16 @@ public class App {
         System.out.println("Application started.");
         String originalInput = "test_intercept.txt";
         String encodedString = Base64.getEncoder().encodeToString(originalInput.getBytes());
-        String decodedString = Arrays.toString(Base64.getDecoder().decode(encodedString));
+        System.out.println(encodedString);
+        String decodedString = new String(Base64.getDecoder().decode(encodedString));
+        System.out.println(decodedString);
 
         File testFile = new File(decodedString);
-        File testFile1 = new File("test_intercept1.txt");
+        Files.write(Paths.get("c:/users/basti/documents/test.txt"), new byte[] {1,2,3,4,5});
+        File testFile1 = new File(decodedString);
         testFile1.createNewFile();
         testFile1.delete();
-        File testFile2 = new File("test_intercept2.txt");
+        File testFile2 = new File(decodedString);
         testFile2.delete();
 
 

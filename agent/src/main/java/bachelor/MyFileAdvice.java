@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 
 public class MyFileAdvice {
 
+    private static final String PROTECTED = "test_intercept.txt";
+
     /**
      * This method is executed before the target method (File.delete()).
      * @param file The instance of the File class on which delete() is called.
@@ -15,12 +17,11 @@ public class MyFileAdvice {
     @Advice.OnMethodEnter
     public static void onEnter(@Advice.Origin Method method, @Advice.This File file) {
         System.out.println("### ByteBuddy Intercept: ENTERING " + method.toString());
-        // Add your custom pre-execution logic here
-        // Example: Prevent deletion of a specific file
-        // if (file.getName().equals("protected.txt")) {
-        //     System.err.println("### ByteBuddy Intercept: Deletion of protected.txt DENIED! ###");
-        //     throw new SecurityException("Deletion denied by agent!");
-        // }
+//         Prevent deletion of a specific file
+         if (file.getName().equals(PROTECTED)) {
+             System.err.println("### ByteBuddy Intercept: Deletion of protected.txt DENIED! ###");
+//             throw new SecurityException("Deletion denied by agent!");
+         }
     }
 
     /**
@@ -30,14 +31,14 @@ public class MyFileAdvice {
      * @param result The boolean result of the original File.delete() method.
      * @param thrown Any Throwable that was thrown by the original method.
      */
-    @Advice.OnMethodExit(onThrowable = Throwable.class) // Capture exceptions if thrown [1]
-    public static void onExit(@Advice.Origin Method method, @Advice.This File file,
-                              @Advice.Return boolean result, @Advice.Thrown Throwable thrown) {
-        if (thrown != null) {
-            System.err.println("### ByteBuddy Intercept: TEST " + method.toString() + " FAILURE ###");
-        } else {
-            System.out.println("### ByteBuddy Intercept: EXITING " + method.toString() + " SUCCESS ###");
-        }
+//    @Advice.OnMethodExit(onThrowable = Throwable.class) // Capture exceptions if thrown [1]
+//    public static void onExit(@Advice.Origin Method method, @Advice.This File file,
+//                              @Advice.Return boolean result, @Advice.Thrown Throwable thrown) {
+//        if (thrown != null) {
+//            System.err.println("### ByteBuddy Intercept: TEST " + method.toString() + " FAILURE ###");
+//        } else {
+//            System.out.println("### ByteBuddy Intercept: EXITING " + method.toString() + " SUCCESS ###");
+//        }
         // Add your custom post-execution logic here
-    }
+//    }
 }
