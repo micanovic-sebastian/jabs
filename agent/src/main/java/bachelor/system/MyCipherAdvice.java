@@ -1,4 +1,4 @@
-package bachelor;
+package bachelor.system;
 
 import net.bytebuddy.asm.Advice;
 

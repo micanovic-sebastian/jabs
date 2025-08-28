@@ -1,9 +1,9 @@
-package bachelor;
+package bachelor.system;
 
 import net.bytebuddy.asm.Advice;
+
 import java.lang.reflect.Method;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.HashMap;
 
 public class MyFrequencyAdvice {
 
@@ -13,36 +13,47 @@ public class MyFrequencyAdvice {
     private static final int NETWORK_CALL_LIMIT = 3;
 
     private static class CallStats {
-        private final AtomicInteger count = new AtomicInteger(0);
-        private volatile long firstCallTime;
+        private int count;
+        private long firstCallTime;
 
         public CallStats() {
+            this.count = 0;
             this.firstCallTime = System.currentTimeMillis();
         }
 
         public void reset() {
-            this.count.set(0);
+            this.count = 0;
             this.firstCallTime = System.currentTimeMillis();
         }
     }
 
-    private static final ConcurrentHashMap<String, CallStats> callStatsMap = new ConcurrentHashMap<>();
+    private static final HashMap<String, CallStats> callStatsMap = new HashMap<>();
+    private static final Object lock = new Object(); // Object for synchronization
 
     @Advice.OnMethodEnter
     public static void onEnter(@Advice.Origin Method method) {
         String methodName = method.getDeclaringClass().getName() + "." + method.getName();
-        CallStats stats = callStatsMap.computeIfAbsent(methodName, k -> new CallStats());
 
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - stats.firstCallTime > TIME_WINDOW_MS) {
-            stats.reset();
-        }
+        // All access to the shared map and its contents must be synchronized
+        synchronized (lock) {
+            CallStats stats = callStatsMap.get(methodName);
+            if (stats == null) {
+                stats = new CallStats();
+                callStatsMap.put(methodName, stats);
+            }
 
-        int currentCount = stats.count.incrementAndGet();
-        int limit = getLimitForMethod(methodName);
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - stats.firstCallTime > TIME_WINDOW_MS) {
+                stats.reset();
+            }
 
-        if (currentCount > limit) {
-            System.err.println("### FREQUENCY WARNING: Method '" + methodName + "' called " + currentCount + " times in under " + TIME_WINDOW_MS + "ms. This exceeds the limit of " + limit + ".");
+            stats.count++;
+            int currentCount = stats.count;
+            int limit = getLimitForMethod(methodName);
+
+            if (currentCount > limit) {
+                System.err.println("### FREQUENCY WARNING: Method '" + methodName + "' called " + currentCount + " times in under " + TIME_WINDOW_MS + "ms. This exceeds the limit of " + limit + ".");
+            }
         }
     }
 

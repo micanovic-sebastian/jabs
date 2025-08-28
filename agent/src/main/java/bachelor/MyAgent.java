@@ -9,27 +9,30 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.Arrays;
 import java.util.List;
-import java.util.jar.JarFile;
 
+import static net.bytebuddy.agent.builder.AgentBuilder.RedefinitionStrategy.RETRANSFORMATION;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 public class MyAgent {
 
-    private static final String FILE_ADVICE_CLASS = "bachelor.MyFileAdvice";
-    private static final String FILES_WRITE_ADVICE_CLASS = "bachelor.MyFilesWriteAdvice";
-    private static final String NETWORK_ADVICE_CLASS = "bachelor.MyNetworkAdvice";
-    private static final String OUTPUT_STREAM_ADVICE_CLASS = "bachelor.MyOutputStreamAdvice";
-    private static final String WRITER_ADVICE_CLASS = "bachelor.MyWriterAdvice";
-    private static final String INPUT_STREAM_ADVICE_CLASS = "bachelor.MyInputStreamAdvice";
-    private static final String REFLECTION_ADVICE_CLASS = "bachelor.MyReflectionAdvice"; // New advice class
-    private static final String METHOD_INVOKE_ADVICE_CLASS = "bachelor.MyMethodInvokeAdvice"; // New advice class
-    private static final String CIPHER_ADVICE_CLASS = "bachelor.MyCipherAdvice"; // New
-    private static final String FREQUENCY_ADVICE_CLASS = "bachelor.MyFrequencyAdvice"; // New advice class
-    private static final String DIGEST_ADVICE_CLASS = "bachelor.MyDigestAdvice"; // New
+    private static final String FILE_ADVICE_CLASS = "bachelor.filesystem.MyFileAdvice";
+    private static final String FILES_WRITE_ADVICE_CLASS = "bachelor.filesystem.MyFilesWriteAdvice";
+    private static final String NETWORK_ADVICE_CLASS = "bachelor.system.MyNetworkAdvice";
+    private static final String OUTPUT_STREAM_ADVICE_CLASS = "bachelor.filesystem.MyOutputStreamAdvice";
+    private static final String WRITER_ADVICE_CLASS = "bachelor.filesystem.MyWriterAdvice";
+    private static final String INPUT_STREAM_ADVICE_CLASS = "bachelor.filesystem.MyInputStreamAdvice";
+    private static final String REFLECTION_ADVICE_CLASS = "bachelor.reflection.MyReflectionAdvice";
+    private static final String METHOD_INVOKE_ADVICE_CLASS = "bachelor.reflection.MyMethodInvokeAdvice";
+    private static final String CIPHER_ADVICE_CLASS = "bachelor.system.MyCipherAdvice";
+    private static final String DIGEST_ADVICE_CLASS = "bachelor.system.MyDigestAdvice"; // Ne
+    private static final String FREQUENCY_ADVICE_CLASS = "bachelor.system.MyFrequencyAdvice"; // New advice clas
     private static String agentJarPath;
     private static List<String> classesToRetransform = Arrays.asList("java.io.File", "java.nio.file.Files", "java.util.Arrays", "java.util.List",
                                                                      "java.lang.reflect.Method", "java.io.OutputStream", "sun.nio.ch.ChannelOutputStream",
-                                                                     "java.io.Writer", "java.net.InetSocketAddress", "bachelor.Logger");
+                                                                     "java.io.Writer", "java.net.InetSocketAddress", "bachelor.Logger",
+                                                                     "bachelor.MyFrequencyAdvice", "javax.crypto.Cipher", "java.security.MessageDigest",
+                                                                     "java.net.Socket");
+
 
 
     public static void premain(String agentArguments, Instrumentation instrumentation) throws IOException {
@@ -52,29 +55,12 @@ public class MyAgent {
         // Configure AgentBuilder to transform java.io.File
         new AgentBuilder.Default()
             // Crucial: Do not ignore types loaded by the bootstrap class loader [5, 6, 7]
-            .ignore(ElementMatchers.none())
+            .ignore(ElementMatchers.nameStartsWith("java.util.concurrent"))
             // Enable retransformation for already loaded classes (like core JDK classes) [8, 7, 9, 10]
-            .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
+            .with(RETRANSFORMATION)
             // Use REDEFINE strategy to modify existing classes [7]
             .with(AgentBuilder.TypeStrategy.Default.REDEFINE)
                                 // --- APPLY MyFrequencyAdvice ---
-                    // Crypto methods
-            .type(named("javax.crypto.Cipher").or(named("java.security.MessageDigest")))
-            .transform(new AgentBuilder.Transformer.ForAdvice()
-                            .include(MyAgent.class.getClassLoader())
-                            .advice(named("getInstance").or(named("doFinal").or(named("init"))), FREQUENCY_ADVICE_CLASS))
-
-                    // File deletion
-            .type(named("java.io.File"))
-            .transform(new AgentBuilder.Transformer.ForAdvice()
-                            .include(MyAgent.class.getClassLoader())
-                            .advice(named("delete"), FREQUENCY_ADVICE_CLASS))
-
-                    // Network connections
-            .type(named("java.net.Socket"))
-            .transform(new AgentBuilder.Transformer.ForAdvice()
-                            .include(MyAgent.class.getClassLoader())
-                            .advice(named("connect"), FREQUENCY_ADVICE_CLASS))
             // Add a listener for verbose debugging output [11, 5, 12, 13, 14, 15, 16]
 //               .with(AgentBuilder.Listener.StreamWriting.toSystemOut())
             // Target the specific class: java.io.File
@@ -142,23 +128,16 @@ public class MyAgent {
             .transform(new AgentBuilder.Transformer.ForAdvice()
                             .include(MyAgent.class.getClassLoader())
                             .advice(named("getInstance"), DIGEST_ADVICE_CLASS))
+
             .installOn(instrumentation);
 
 
-            // Install the agent on the provided Instrumentation instance
+
 
         // Request retransformation for java.io.File if it's already loaded
         // This is necessary for core JDK classes that might be loaded before the agent is fully active.
         try {
-//            Class<?> fileClass = Class.forName("java.io.File");
-//            Class<?> nioFilesClass = Class.forName("java.nio.file.Files");
-//            if (instrumentation.isModifiableClass(fileClass)) { // Check if the class can be modified
-//                instrumentation.retransformClasses(fileClass); // Request retransformation
-//                instrumentation.retransformClasses(nioFilesClass); // Request retransformation
-//                System.out.println("### Agent: Successfully requested retransformation for java.io.File. ###");
-//            } else {
-//                System.out.println("### Agent: java.io.File is not modifiable. This might be due to JVM restrictions. ###");
-//            }
+
             for (String clazzString : classesToRetransform) {
                 Class<?> clazz = Class.forName(clazzString);
                 instrumentation.retransformClasses(clazz); // Request retransformation

@@ -1,8 +1,8 @@
-package bachelor;
+package bachelor.filesystem;
 
 import net.bytebuddy.asm.Advice;
-import java.lang.reflect.Method;
 
+import java.lang.reflect.Method;
 import java.nio.file.Path;
 
 public class MyFilePermissionAdvice {

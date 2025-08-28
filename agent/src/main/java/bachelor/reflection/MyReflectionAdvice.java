@@ -1,8 +1,8 @@
-package bachelor;
+package bachelor.reflection;
 
 import net.bytebuddy.asm.Advice;
+
 import java.lang.reflect.Method;
-import java.lang.Class;
 
 public class MyReflectionAdvice {
 

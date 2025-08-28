@@ -1,6 +1,7 @@
-package bachelor;
+package bachelor.system;
 
 import net.bytebuddy.asm.Advice;
+
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.reflect.Method;

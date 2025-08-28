@@ -1,8 +1,9 @@
-package bachelor;
+package bachelor.filesystem;
 
 import net.bytebuddy.asm.Advice;
-import java.lang.reflect.Method;
+
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 
 public class MyOutputStreamAdvice {
 

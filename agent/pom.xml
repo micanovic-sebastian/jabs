@@ -57,15 +57,17 @@
                                         <Premain-Class>${agent.main.class}</Premain-Class>
                                         <Can-Redefine-Classes>true</Can-Redefine-Classes>
                                         <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                                        <Boot-Class-Path>agent-shaded.jar</Boot-Class-Path>
+
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
-                            <relocations>
-                                <relocation>
-                                    <pattern>net.bytebuddy</pattern>
-                                    <shadedPattern>bachelor.shaded.bytebuddy</shadedPattern>
-                                </relocation>
-                                </relocations>
+<!--                            <relocations>-->
+<!--                                <relocation>-->
+<!--                                    <pattern>net.bytebuddy</pattern>-->
+<!--                                    <shadedPattern>bachelor.shaded.bytebuddy</shadedPattern>-->
+<!--                                </relocation>-->
+<!--                                </relocations>-->
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <filters>
                                 <filter>

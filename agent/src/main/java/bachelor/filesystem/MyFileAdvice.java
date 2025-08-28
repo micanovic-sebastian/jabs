@@ -1,8 +1,9 @@
-package bachelor;
-import net.bytebuddy.asm.Advice;
-import java.io.File; // Import java.io.File to access its methods via @Advice.This
-import java.lang.reflect.Method;
+package bachelor.filesystem;
 
+import net.bytebuddy.asm.Advice;
+
+import java.io.File;
+import java.lang.reflect.Method;
 
 
 public class MyFileAdvice {
