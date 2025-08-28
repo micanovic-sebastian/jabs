@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.basti</groupId>
+    <groupId>bachelor</groupId>
     <artifactId>agent</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -63,7 +63,7 @@
                             <relocations>
                                 <relocation>
                                     <pattern>net.bytebuddy</pattern>
-                                    <shadedPattern>org.basti.shaded.bytebuddy</shadedPattern>
+                                    <shadedPattern>bachelor.shaded.bytebuddy</shadedPattern>
                                 </relocation>
                                 </relocations>
                             <createDependencyReducedPom>false</createDependencyReducedPom>

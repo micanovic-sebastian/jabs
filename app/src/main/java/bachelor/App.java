@@ -1,85 +1,83 @@
 package bachelor;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.io.*;
 import java.lang.reflect.Method;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
 public class App {
-    public static void main(String[] args) throws IOException, NoSuchMethodException,
-                                                  InvocationTargetException, IllegalAccessException {
-
-//        Class<?> clazz = Class.forName("idk");
-//        clazz.accessFlags();
-//        RandomAccessFile raf = new RandomAccessFile(new File("/bin"), "a");
-//        raf.write(3);
-//        Socket socket = new Socket();
-//        socket.connect(new InetSocketAddress("127.0.0.1", 5555));
-//        Runtime.getRuntime().exec("aa");
-//        Files.delete(Paths.get("aaa"));
-//        Files.write(Paths.get("Program Files"), new byte[50]);
-//        Files.write(Paths.get("/media"), new byte[50]);
-
-        try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            Base64.Decoder base64 = Base64.getDecoder();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchPaddingException e) {
-            throw new RuntimeException(e);
-        }
-        BigInteger bigInteger1 = BigInteger.ONE;
-        for (int i = 0; i < 1; i++) {
-            BigInteger bigInteger = BigInteger.ONE;
-        }
-        Method method = Integer.class.getMethod("toString");
-        method.invoke(3);
-        method.toString();
-
+    public static void main(String[] args) throws Exception {
 
         System.out.println("Application started.");
-        String originalInput = "test_intercept.txt";
-        String encodedString = Base64.getEncoder().encodeToString(originalInput.getBytes());
-        System.out.println(encodedString);
-        String decodedString = new String(Base64.getDecoder().decode(encodedString));
-        System.out.println(decodedString);
 
-        File testFile = new File(decodedString);
-        Files.write(Paths.get("c:/users/basti/documents/test.txt"), new byte[] {1,2,3,4,5});
-        File testFile1 = new File(decodedString);
-        testFile1.createNewFile();
-        testFile1.delete();
-        File testFile2 = new File(decodedString);
-        testFile2.delete();
+        // --- Test File I/O Interception (MyFilesWriteAdvice, MyOutputStreamAdvice, MyInputStreamAdvice, MyWriterAdvice) ---
+        String testFilePath = "c:/users/basti/documents/test-file-io.txt";
+        String protectedPath = "c:\\windows\\system32\\test.txt";
+        String nonExistentPath = "nonexistent/file.txt";
 
-
-        try {
-            // Create the file first so delete() has something to delete
-            boolean created = testFile.createNewFile();
-            System.out.println("Test file created: " + created);
-
-            if (created) {
-                System.out.println("Attempting to delete test_intercept.txt...");
-                // This is the call we expect to be intercepted
-                boolean deleted = testFile.delete();
-                System.out.println("Test file deleted: " + deleted);
-            } else {
-                System.out.println("Test file already exists or could not be created.");
-                // If file exists, try to delete it anyway to test interception
-                System.out.println("Attempting to delete existing test_intercept.txt...");
-                boolean deleted = testFile.delete();
-                System.out.println("Existing test file deleted: " + deleted);
-            }
-
+        // Test FileOutputStream (OutputStream.write)
+        try (FileOutputStream fos = new FileOutputStream(testFilePath)) {
+            fos.write("Testing FileOutputStream".getBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("File write failed: " + e.getMessage());
+        }
+
+        // Test FileInputStream (InputStream.read)
+        try (FileInputStream fis = new FileInputStream(testFilePath)) {
+            byte[] data = new byte[100];
+            fis.read(data);
+        } catch (IOException e) {
+            System.err.println("File read failed: " + e.getMessage());
+        }
+
+        // Test BufferedWriter (Writer.write)
+        try (FileWriter fw = new FileWriter(testFilePath);
+             BufferedWriter bw = new BufferedWriter(fw)) {
+            bw.write("Testing BufferedWriter.");
+        } catch (IOException e) {
+            System.err.println("Writer failed: " + e.getMessage());
+        }
+
+        // Test Files.write to a protected path (should be logged but the method will throw an exception)
+        try {
+            Files.write(Paths.get(protectedPath), new byte[] {1, 2, 3});
+        } catch (IOException e) {
+            System.err.println("Attempted write to protected path failed as expected: " + e.getClass().getName());
+        }
+
+        // Test File.delete on an existing and non-existent file
+        File existingFile = new File("c:/users/basti/documents/test_intercept.txt");
+        Files.write(Paths.get(existingFile.getName()), "content".getBytes());
+        existingFile.delete(); // This call should be intercepted
+
+        File nonExistentFile = new File(nonExistentPath);
+        nonExistentFile.delete(); // This is an edge case: delete on a file that doesn't exist
+
+        // --- Test Network Interception (MyNetworkAdvice) ---
+        try (java.net.Socket socket = new java.net.Socket()) {
+            // Using a public DNS server for testing
+            socket.connect(new java.net.InetSocketAddress("8.8.8.8", 53), 5000);
+            System.out.println("Network connection to 8.8.8.8:53 successful.");
+        } catch (IOException e) {
+            System.err.println("Network connection test failed: " + e.getMessage());
+        }
+
+        // --- Test Reflection Interception (MyReflectionAdvice, MyMethodInvokeAdvice) ---
+        Class<?> clazz = String.class;
+
+        // Test getting a method by name (Class.getMethod)
+        Method stringMethod = clazz.getMethod("toLowerCase");
+
+        // Test invoking the method (Method.invoke)
+        String myString = "Hello, World!";
+        Object result = stringMethod.invoke(myString);
+        System.out.println("Reflection invocation result: " + result);
+
+        // Edge case: get a method that doesn't exist
+        try {
+            clazz.getMethod("nonExistentMethod");
+        } catch (NoSuchMethodException e) {
+            System.err.println("Reflection: Correctly failed to find nonExistentMethod.");
         }
 
         System.out.println("Application finished.");

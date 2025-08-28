@@ -39,7 +39,7 @@ public class MyFilesWriteAdvice {
         String absolutePath = path.toAbsolutePath().toString();
         System.out.println(absolutePath);
 
-        if (containsSensitivePath(absolutePath)) {
+        if (true) {
             System.err.println("### ByteBuddy Intercept: Writing to protected file " + path.toString() + " DENIED! ###");
 //            throw new SecurityException("Deletion denied by agent!");
         } else {

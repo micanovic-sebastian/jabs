@@ -65,10 +65,10 @@
                             <!-- REQUIRED: The main class for your application -->
                             <mainClass>bachelor.App</mainClass>
                             <!-- OPTIONAL: To add classpath entries if external JARs are needed -->
-                            <addClasspath>true</addClasspath>
+<!--                            <addClasspath>true</addClasspath>-->
                             <!-- Default entries are good practice -->
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+<!--                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>-->
+<!--                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>-->
                         </manifest>
                         <!-- IMPORTANT: NO <manifestEntries> BLOCK HERE FOR AN APPLICATION JAR -->
                     </archive>
