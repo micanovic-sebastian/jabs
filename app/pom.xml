@@ -20,7 +20,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>bachelor.App</mainClass>
+                            <mainClass>bachelor.ComprehensiveApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
