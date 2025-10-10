@@ -18,7 +18,7 @@ public class MyPerformanceAdvice {
     @Advice.OnMethodEnter
     public static void onEnter(@Advice.Origin Method method) {
         startTime.set(System.nanoTime());
-        // Approximate memory usage by checking heap memory
+        // Approximate memory usage by getting heap memory
         MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
         initialMemory.set(memoryBean.getHeapMemoryUsage().getUsed());
 

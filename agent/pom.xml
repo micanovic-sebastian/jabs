@@ -3,28 +3,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>bachelor</groupId>
-    <artifactId>agent</artifactId>
-    <version>0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <parent>
+        <groupId>bachelor</groupId>
+        <artifactId>jabs-project</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
 
-    <properties>
-        <maven.compiler.source>20</maven.compiler.source>
-        <maven.compiler.target>20</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <agent.main.class>bachelor.MyAgent</agent.main.class>
-        <bytebuddy.version>1.14.18</bytebuddy.version> </properties>
+    <artifactId>agent</artifactId>
+    <name>JABS Agent</name>
 
     <dependencies>
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>${bytebuddy.version}</version>
         </dependency>
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-agent</artifactId>
-            <version>${bytebuddy.version}</version>
         </dependency>
     </dependencies>
 
@@ -32,18 +27,7 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -51,23 +35,17 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <finalName>${project.artifactId}-shaded</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Premain-Class>${agent.main.class}</Premain-Class>
+                                        <Premain-Class>bachelor.MyAgent</Premain-Class>
                                         <Can-Redefine-Classes>true</Can-Redefine-Classes>
                                         <Can-Retransform-Classes>true</Can-Retransform-Classes>
-                                        <Boot-Class-Path>agent-shaded.jar</Boot-Class-Path>
-
+                                        <!-- Der fehlerhafte Boot-Class-Path wurde entfernt -->
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
-<!--                            <relocations>-->
-<!--                                <relocation>-->
-<!--                                    <pattern>net.bytebuddy</pattern>-->
-<!--                                    <shadedPattern>bachelor.shaded.bytebuddy</shadedPattern>-->
-<!--                                </relocation>-->
-<!--                                </relocations>-->
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <filters>
                                 <filter>
@@ -80,7 +58,6 @@
                                     </excludes>
                                 </filter>
                             </filters>
-                            <finalName>${project.artifactId}-shaded</finalName>
                         </configuration>
                     </execution>
                 </executions>
