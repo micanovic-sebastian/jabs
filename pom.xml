@@ -3,26 +3,38 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.basti</groupId>
-    <artifactId>dynamic-analyzer</artifactId> <version>0.1-SNAPSHOT</version>
-    <packaging>pom</packaging> <name>root</name>
+    <groupId>bachelor</groupId>
+    <artifactId>jabs-project</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>JABS Parent Project</name>
 
     <properties>
-        <maven.compiler.source>20</maven.compiler.source>
-        <maven.compiler.target>20</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <bytebuddy.version>1.14.16</bytebuddy.version>
-
-        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
-        <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
-        <maven.shade.plugin.version>3.5.2</maven.shade.plugin.version>
+        <bytebuddy.version>1.14.18</bytebuddy.version>
     </properties>
 
     <modules>
-        <module>agent</module> <module>app</module>
-<!--        <module>inst</module>-->
+        <module>agent</module>
+        <module>app</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>${bytebuddy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy-agent</artifactId>
+                <version>${bytebuddy.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>
@@ -30,20 +42,19 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven.compiler.plugin.version}</version>
+                    <version>3.11.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven.jar.plugin.version}</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>${maven.shade.plugin.version}</version>
+                    <version>3.6.0</version>
                 </plugin>
-                </plugins>
+            </plugins>
         </pluginManagement>
     </build>
-
-    </project>
+</project>

@@ -4,73 +4,24 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.basti</groupId>
-        <artifactId>dynamic-analyzer</artifactId>
+        <groupId>bachelor</groupId>
+        <artifactId>jabs-project</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.basti</groupId>
     <artifactId>app</artifactId>
-    <version>0.1</version>
-    <packaging>jar</packaging> <!-- Standard JAR packaging -->
-
-    <name>app</name>
-
-    <properties>
-        <maven.compiler.source>20</maven.compiler.source>
-        <maven.compiler.target>20</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <!-- Dependencies of your application (none in this simple example) -->
-    <dependencies>
-        <!-- For example, if your App used JUnit for tests -->
-        <!--
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.10.0</version>
-            <scope>test</scope>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>org.basti</groupId>
-            <artifactId>agent</artifactId>
-            <version>0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+    <name>JABS Test Application</name>
 
     <build>
         <plugins>
-            <!-- Maven Compiler Plugin: Ensures correct Java version for compilation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                </configuration>
-            </plugin>
-
-            <!-- Maven JAR Plugin: Configures the manifest for the executable application JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
                 <configuration>
                     <archive>
                         <manifest>
-                            <!-- REQUIRED: The main class for your application -->
                             <mainClass>bachelor.App</mainClass>
-                            <!-- OPTIONAL: To add classpath entries if external JARs are needed -->
-<!--                            <addClasspath>true</addClasspath>-->
-                            <!-- Default entries are good practice -->
-<!--                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>-->
-<!--                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>-->
                         </manifest>
-                        <!-- IMPORTANT: NO <manifestEntries> BLOCK HERE FOR AN APPLICATION JAR -->
                     </archive>
                 </configuration>
             </plugin>
